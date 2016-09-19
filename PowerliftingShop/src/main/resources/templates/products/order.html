@@ -1,0 +1,45 @@
+<html layout:decorator="layout">
+
+<div layout:fragment="content">
+
+
+	<h1 th:style="'margin-top: 50px;'">Give us your address</h1>
+	<form action="#" th:action="@{/cart/order}" th:object="${order}"
+		method="post">
+		<p>First Name:</p>
+		<p>
+			<input type="text" th:field="*{firstName}" />
+		</p>
+
+		<p>Last Name:</p>
+		<p>
+			<input type="text" th:field="*{lastName}" />
+		</p>
+
+		<p>Street:</p>
+		<p>
+			<input type="text" th:field="*{street}" />
+		</p>
+
+		<p>City:</p>
+		<p>
+			<input type="text" th:field="*{city}" />
+		</p>
+
+		<p>Post Code:</p>
+		<p>
+			<input type="text" th:field="*{postCode}" />
+		</p>
+
+		<p>Email Address:</p>
+		<p>
+			<input type="email" th:field="*{emailAddress}" />
+		</p>
+
+		<p>
+			<input type="submit" value="Submit" />
+		</p>
+	</form>
+
+</div>
+</html>

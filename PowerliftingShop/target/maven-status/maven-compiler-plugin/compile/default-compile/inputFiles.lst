@@ -1,0 +1,10 @@
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/domain/Product.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/repositories/ProductRepository.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/domain/Order.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/service/NotificationService.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/controllers/OrderController.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/domain/Cart.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/controllers/ProductController.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/PowerliftingShopApplication.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/repositories/CartRepository.java
+/home/simongk/Documents/soft/workspace spring/pwrlfitngshop/PowerliftingShop/src/main/java/com/simongk/controllers/CartController.java

@@ -1,0 +1,46 @@
+<html layout:decorator="layout">
+
+<div layout:fragment="content">
+
+	<table class="table table-striped" id="cart_list">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Company</th>
+				<th>Quantity</th>
+				<th>Cost</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			<tr data-th-each="cart : ${carts}">
+				<td class="cart" data-th-text="${cart.product.getName()}"></td>
+				<td class="cart" data-th-text="${cart.product.getCompany()}"></td>
+				<td><a th:href="@{'cart/{id}/update' (id=${cart.id})}"
+					class="update" th:attr="quantity=${cart.quantity}"> <span
+						class="fa-stack"><i class="glyphicon glyphicon-plus"> </i>
+					</span>
+				</a>
+					<p data-th-text="${cart.quantity}"></p></td>
+				<td class="cart" data-th-text="${cart.cartCost}"></td>
+				<td><a th:href="@{'/cart/{id}/delete'(id=${cart.id})}"
+					class="delete"
+					th:attr="
+			name=${cart.product.getName()},
+			company=${cart.product.getCompany()},
+			quantity=${cart.quantity},
+			cost=${cart.cartCost}">
+						<span class="fa-stack"> <i
+							class="glyphicon glyphicon-trash"></i>
+					</span>
+				</a></td>
+			</tr>
+			<tr>
+				<td><a th:href="@{'/cart/order'}">
+						<p>Order</p>
+				</a></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</html>

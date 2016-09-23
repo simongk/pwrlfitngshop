@@ -4,28 +4,33 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.simongk.domain.Cart;
 import com.simongk.domain.Order;
 import com.simongk.repositories.CartRepository;
 import com.simongk.service.NotificationService;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
+@Slf4j
 public class OrderController {
 
-	private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 	private CartRepository cartRepository;
 	private NotificationService notificationService;
-	private double totalCost;
+	
+	private BigDecimal totalCost;
+	
+	@Getter 
+	private List<BigDecimal> prices;
 
 	@Autowired
 	public OrderController(CartRepository cartRepository, NotificationService notificationService) {
@@ -33,15 +38,15 @@ public class OrderController {
 		this.notificationService = notificationService;
 	}
 
-	@RequestMapping(value = "/cart/order", method = RequestMethod.GET)
+	@GetMapping("/cart/order")
 	public String orderForm(Model model) {
 		model.addAttribute("order", new Order());
 		return "products/order";
 	}
 
-	@RequestMapping(value = "/cart/order", method = RequestMethod.POST)
+	@PostMapping("/cart/order")
 	public String orderSubmit(@ModelAttribute Order order, Model model) {
-		order.setTotalCost(new BigDecimal(totalCost()));
+		order.setTotalCost(totalCost());
 		sendOrderEmail(order);
 		cartRepository.deleteAll();
 		model.addAttribute("order", order);
@@ -56,11 +61,16 @@ public class OrderController {
 		}
 	}
 
-	private double totalCost() {
-		Iterable<Cart> cartProducts = cartRepository.findAll();
-		List<BigDecimal> prices = new ArrayList<>();
-		cartProducts.forEach((cart) -> prices.add(cart.getCartCost()));
-		prices.forEach((price) -> totalCost = totalCost + price.toBigInteger().doubleValue());
+	private BigDecimal totalCost() {
+		List<Cart> cartProducts = cartRepository.findAll();
+		prices = new ArrayList<>();
+		
+		totalCost = cartProducts
+		.stream()
+		.map(cart -> cart.getCartCost())
+		.reduce(BigDecimal.ZERO,(prices,cart) ->
+		prices.add(cart));
+
 		return totalCost;
 	}
 

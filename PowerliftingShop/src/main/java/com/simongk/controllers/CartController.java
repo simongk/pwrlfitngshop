@@ -1,13 +1,14 @@
 package com.simongk.controllers;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.simongk.domain.Cart;
@@ -24,34 +25,43 @@ public class CartController {
 		this.repository = repository;
 	}
 
-	@RequestMapping(value = "", method = RequestMethod.GET)
+	@GetMapping
 	public String listProducts(Model model) {
 		model.addAttribute("carts", getCartProducts());
 		return "products/cart";
 	}
 
-	@RequestMapping(value = "/{id}/delete")
+	@GetMapping("/{id}/delete")
 	public ModelAndView delete(@PathVariable long id) {
-		repository.delete(id);
+		deleteItem(id);
 		return new ModelAndView("redirect:/cart");
 	}
 
-	@RequestMapping(value = "/{id}/update")
+	@GetMapping("/{id}/update")
 	public ModelAndView updateQuantity(@PathVariable long id) {
+		updateItemQuantity(id);
+		return new ModelAndView("redirect:/cart");
+	}
+
+	private void deleteItem(long id) {
+		repository.delete(id);
+	}
+
+	private void updateItemQuantity(long id) {
 		Cart cart = repository.findOne(id);
 		cart.setQuantity(cart.getQuantity() + 1);
 		cart.setCartCost(setActualCost(cart));
 		repository.save(cart);
-		return new ModelAndView("redirect:/cart");
 	}
 
 	private BigDecimal setActualCost(Cart cart) {
-		return new BigDecimal(cart.getProduct().getCost().doubleValue() * cart.getQuantity());
+		BigDecimal quantity = new BigDecimal(cart.getQuantity());
+		BigDecimal actualCost = cart.getProduct().getCost().multiply(quantity);
+		return actualCost;
 	}
 
-	private Iterable<Cart> getCartProducts() {
+	private List<Cart> getCartProducts() {
 		return repository.findAll();
 	}
-
 
 }

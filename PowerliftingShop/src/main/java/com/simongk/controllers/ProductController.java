@@ -7,13 +7,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.simongk.domain.Cart;
 import com.simongk.domain.Product;
+import com.simongk.exceptions.DuplicatedItemException;
 import com.simongk.repositories.CartRepository;
 import com.simongk.repositories.ProductRepository;
 
@@ -30,15 +32,20 @@ public class ProductController {
 		this.cartRepository = cartRepository;
 	}
 
-	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
+	@GetMapping("/{name}")
 	public String getSpecificProducts(Model model, @PathVariable String name) {
 		model.addAttribute("products", getByName(name));
 		return "products/list";
 	}
 
 
-	@RequestMapping(value = "/{id}/add")
+	@GetMapping("/{id}/add")
 	public ModelAndView add(@PathVariable long id, HttpServletRequest request) {
+		addItemToCart(id);
+		return new ModelAndView("redirect:" + request.getHeader("Referer"));
+	}
+
+	private void addItemToCart(long id) throws DuplicatedItemException {
 		Cart cart = new Cart();
 		cart.setProduct(repository.findOne(id));
 		cart.setCartCost(cart.getProduct().getCost());
@@ -46,25 +53,28 @@ public class ProductController {
 		try {
 			cartRepository.save(cart);
 		} catch (Exception e) {
-			return new ModelAndView("redirect:/products/duplicateerror");
+			throw new DuplicatedItemException(
+					"You already have this item in your cart");
 		}
-		return new ModelAndView("redirect:" + request.getHeader("Referer"));
+	}
+	
+	@ExceptionHandler(DuplicatedItemException.class)
+	public ModelAndView handleDuplicateException(DuplicatedItemException ex){
+		ModelAndView model = new ModelAndView("errors/duplicated");
+		model.addObject("msg",ex.getMsg());
+		return model;
+		
 	}
 
-	@RequestMapping(value = "/duplicateerror")
-	public String duplicateError() {
-		return "duplicatedAddError";
-	}
-
-	private Iterable<Product> getByName(String name) {
-		Iterable<Product> list = null;
+	private List<Product> getByName(String name) {
+		List<Product> products = null;
 		if (isKneeSleeves(name))
-			list = getKneeSleeves();
+			products = getKneeSleeves();
 		else if (isBelt(name))
-			list = getBelt();
+			products = getBelt();
 		else if (isAccessory(name))
-			list = getAccessory();
-		return list;
+			products = getAccessory();
+		return products;
 	}
 
 	private List<Product> getAccessory() {

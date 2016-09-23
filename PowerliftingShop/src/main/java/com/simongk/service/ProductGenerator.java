@@ -14,9 +14,9 @@ import lombok.Getter;
 @Service
 public class ProductGenerator {
 
-	private final String[] names = { "Knee Sleeves", "Belt", "Accessory" };
-	private final String[] descriptions = { "Solid piece of equipment", "Worth it's price", "Get it to boost your progress" };
-	private final String[] companies = { "Titan", "SBD", "Metal", "Pionier", "Inzer", "Power System" };
+	private static final String[] NAMES = { "Knee Sleeves", "Belt", "Accessory" };
+	private static final String[] DESCRIPTIONS = { "Solid piece of equipment", "Worth it's price", "Get it to boost your progress" };
+	private static final String[] COMPANIES = { "Titan", "SBD", "Metal", "Pionier", "Inzer", "Power System" };
 
 	@Getter
 	private List<String> productNames;
@@ -24,8 +24,8 @@ public class ProductGenerator {
 	private List<String> productDescriptions;
 	@Getter
 	private List<String> productCompanies;
-	private static final double COST_BASE = 300.0;
-	private static final double COST_SPREAD = 500.0;
+	private static final BigDecimal COST_BASE = new BigDecimal(300.0);
+	private static final BigDecimal COST_SPREAD = new BigDecimal(500.0);
 	private final Random random = new Random();
 
 	public Product generate() {
@@ -34,17 +34,17 @@ public class ProductGenerator {
 	}
 
 	private String getRandomCompany() {
-		productCompanies = Arrays.asList(companies);
+		productCompanies = Arrays.asList(COMPANIES);
 		return getRandom(getProductCompanies());
 	}
 
 	private String getRandomDescription() {
-		productDescriptions = Arrays.asList(descriptions);
+		productDescriptions = Arrays.asList(DESCRIPTIONS);
 		return getRandom(getProductDescriptions());
 	}
 
 	private String getRandomName() {
-		productNames = Arrays.asList(names);
+		productNames = Arrays.asList(NAMES);
 		return getRandom(productNames);
 	}
 
@@ -53,7 +53,9 @@ public class ProductGenerator {
 	}
 
 	private BigDecimal getRandomCost() {
-		return new BigDecimal(COST_BASE + Math.random() * COST_SPREAD);
+		BigDecimal random = new BigDecimal(Math.random());
+		BigDecimal result = COST_BASE.add(random.multiply(COST_SPREAD));
+		return result;
 	}
 
 }
